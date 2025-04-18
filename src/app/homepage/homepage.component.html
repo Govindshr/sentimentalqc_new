@@ -1,0 +1,211 @@
+<!-- <app-header></app-header> -->
+
+<div class="mb-3 mt-3 ms-3 d-flex justify-content-between">
+  <div>
+    <input class="h-33" type="text" id="InstanceID" placeholder="Enter SurveyInstanceID" name="SurveyInstanceID"
+      [(ngModel)]="SurveyInstanceID" />
+    <button *ngIf="activetab=='present'" class="ms-2 btn btn-dark" (click)="filterdata()">Search</button>
+    <button *ngIf="activetab=='history'" class="ms-2 btn btn-dark" (click)="filterHistoricalData()">Search</button>
+  </div>
+  <div>
+    <a class="btn btn-dark me-2 " (click)="allData('main')">Present</a>
+    <a class="btn btn-dark me-2 " (click)="allHistoricalData('main')">Historical Data</a>
+    <!-- <a class="btn btn-dark me-2 " routerLink="/oldData">All Data</a> -->
+  </div>
+</div>
+<div *ngIf="activetab=='present'"><b><h3 class="d-flex justify-content-center"> Present Data ( Page - {{newData?.current_page}} ) </h3></b></div>
+<div *ngIf="activetab=='history'"  ><b><h3 class="d-flex justify-content-center"> Historical Data ( Page - {{newData?.current_page}} ) </h3></b></div>
+<div class="section">
+  <div class="accordion accordion-flush" id="accordionFlushExample">
+    <div class="accordion-item" *ngFor="let a of new_Result; let ind=index">
+      <h2 class="accordion-header" [id]="'heading'+ind">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+          (click)='openAccordion[ind] = !openAccordion[ind]' [attr.data-bs-target]="'#index'+ind"
+          [attr.aria-expanded]="openAccordion[ind]" [attr.aria-controls]="'index'+ind">
+          <h5>{{a.SurveyInstanceID}}</h5>
+        </button>
+      </h2>
+      <div [id]="'index'+ind" class="accordion-collapse collapse" [attr.aria-labelledby]="'heading'+ind"
+        data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">QuestionType</th>
+                <th scope="col">Questions</th>
+                <th scope="col">Response </th>
+                <th scope="col">Text</th>
+                <th scope="col">Sentiment</th>
+                <th scope="col">QC Sentiment</th>
+                <th scope="col">Category</th>
+                <th scope="col">QC Category</th>
+                <th scope="col">Conflict</th>
+                <th scope="col">QC Done</th>
+              </tr>
+            </thead>
+            <tbody *ngFor="let b of newData.data">
+              <tr  *ngIf="b.SurveyInstanceID == a.SurveyInstanceID">
+                <td  [ngClass]="b.updated ? 'highlighted' : ''" >{{b.QuestionType ? b.QuestionType : "null"}}</td>
+                <td [ngClass]="b.updated ? 'highlighted' : ''">{{b.Questions ? b.Questions : "null"}}</td>
+                <td [ngClass]="b.updated ? 'highlighted' : ''">{{b.ResponseValue ? b.ResponseValue : "null"}}</td>
+                <td [ngClass]="b.updated ? 'highlighted' : ''">{{b.ReasonText ? b.ReasonText : "null"}}</td>
+                <td [ngClass]="b.updated ? 'highlighted' : ''">{{b.sentiment ? b.sentiment : "null"}}</td>
+                <td [ngClass]="b.updated ? 'highlighted' : ''">
+                  <select name="qcsentiment" id="qcsentiment" [(ngModel)]="b.sentiment_qc">
+                    <option value="Positive">Positive</option>
+                    <option value="Negative">Negative</option>
+                    <option value="Neutral">Neutral</option>
+                  </select>
+                </td>
+                <td [ngClass]="b.updated ? 'highlighted' : ''">
+                  <span (click)="openCategoryModal(b, b.Questions,b.ReasonText,b.ResponseValue)" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal" style="cursor: pointer;">{{b.category ? b.category : "null"}}</span>
+                </td>
+                <td [ngClass]="b.updated ? 'highlighted' : ''">
+                  <span>{{getCategoryQc(b.category_reason)}}</span>
+                </td>
+                <td [ngClass]="b.updated ? 'highlighted' : ''">
+                  <select name="conflict" id="conflict" [(ngModel)]="b.conflict">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                  </select>
+                </td>
+                <td [ngClass]="b.updated ? 'highlighted' : ''">
+                  <button *ngIf="activetab=='present'" type="button" class="btn btn-primary" id="liveToastBtn"
+                    (click)="doneResult(b)">{{b.updated ? 'Updated' : 'Done'}}</button>
+                  <button *ngIf="activetab=='history'" type="button" class="btn btn-primary" id="liveToastBtn"
+                    (click)="doneResultForHistory(b)">{{b.updated ? 'Updated' : 'Done'}}</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showToast" class="toast-box">
+  <div class="toast-body">
+    <span><i class="bi bi-check2-circle"></i></span> Update successfully
+  </div>
+</div>
+
+<div class="d-flex justify-content-center mt-5" *ngIf="loader">
+  <div class="spinner-border" role="status" style="width: 50px; height: 50px;">
+    <span class="sr-only"></span>
+  </div>
+</div>
+<div class="d-grid justify-content-center container" *ngIf="massage">
+  <div class="mt-5 mb-3">{{massage}}</div>
+  <button class="d-flex justify-content-center btn btn-primary" (click)="reload()">Reload</button>
+</div>
+<div class="d-grid justify-content-center container" *ngIf="error">
+  <div class="mt-5 mb-3">Something went wrong</div>
+</div>
+<div *ngIf="activetab=='present'" class="d-flex justify-content-center mt-5">
+  <!-- <div *ngIf="page.offset>1"><button class="btn btn-primary me-5" (click)="prevPage()" [disabled]="page.offset === 1"><i
+        class="bi bi-arrow-left"></i> Previous</button></div>
+  <b style="margin-right: 50px;">
+    <h5>Page {{ page.offset }} of {{ page.total_pages }}</h5>
+  </b>
+  <div><button class="btn btn-primary ml-4" (click)="nextPage()" [disabled]="page.offset === page.total_pages">Next <i
+        class="bi bi-arrow-right"></i></button></div> -->
+        <div class="pagination">
+          <button class="btn btn-dark" (click)="prevPage()" >Previous</button>
+        
+          <ng-container *ngFor="let item of pageRange">
+            <button class="paginationbutton" type="button"
+              (click)="goToPage(item,'present')" 
+              [class.active]="page.offset == item">{{item}}
+            </button>
+          </ng-container>
+        
+          <button class="btn btn-dark"  (click)="nextPage()" >Next</button>
+        </div>
+</div>
+
+<div *ngIf="activetab=='history'" class="d-flex justify-content-center mt-5">
+  <div class="pagination">
+    <button class="btn btn-dark"  (click)="prevPage()" >Previous</button>
+  
+    <ng-container *ngFor="let item of pageRange">
+      <button  class="paginationbutton" 
+        (click)="goToPage(item,'history')" 
+        [class.active]="page.offset == item">{{ item }}
+      </button>
+    </ng-container>
+  
+    <button class="btn btn-dark"  (click)="nextPage()" >Next</button>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{modaltitle}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <h4><b> Text : {{text ? text : "null"}}</b></h4>
+        </div>
+        <div>
+          <h4><b> Response : {{response ? response : "null"}}</b></h4>
+        </div>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Sr.no</th>
+              <th scope="col">Category</th>
+              <th scope="col">Category Text</th>
+              <th scope="col">Sentiment</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let a of currentRow; let ind = index">
+              <td><b>{{ind + 1}}</b></td>
+              <td>
+                <select name="Category" [(ngModel)]="a.Category">
+                  <option value="Please Select" disabled>Please Select</option>
+                  <option value="Quality" hidden>Quality</option>
+                  <option *ngFor="let category of category_List" [value]="category">{{category}}</option>
+                </select>
+              </td>
+              <td>
+                <input type="text" [(ngModel)]="a.Category_text" placeholder="Enter Category" />
+              </td>
+              <td>
+                <select name="Sentiment" [(ngModel)]="a.Sentiment">
+                  <option value="Positive">Positive</option>
+                  <option value="Negative">Negative</option>
+                  <option value="Neutral">Neutral</option>
+                </select>
+              </td>
+              <td>
+                <a (click)="delete(ind)" style="cursor: pointer;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x"
+                    viewBox="0 0 16 16">
+                    <path
+                      d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                  </svg>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div>
+          <button type="button" class="btn btn-primary" (click)="addNewRow()">Add</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Save Changes</button>
+        <!-- <button type="button" class="btn btn-primary" (click)="saveChanges()">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>

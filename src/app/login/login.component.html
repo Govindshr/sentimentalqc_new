@@ -1,0 +1,77 @@
+<!-- Section: Design Block -->
+<!-- <app-header></app-header> -->
+<section class="text-center text-lg-start">
+    <style>
+      .cascading-right {
+        margin-right: -50px;
+      }
+  
+      @media (max-width: 991.98px) {
+        .cascading-right { 
+          margin-right: 0;
+        }
+      }
+    </style>
+  
+    <!-- Jumbotron -->
+    <div class="sentimetalLogin">
+        <div class="container py-4 " >
+            <div class="row g-0 align-items-center">
+              <div class="col-lg-6 mb-5 mb-lg-0">
+                <div class="card cascading-right" style="
+                    background: hsla(0, 0%, 100%, 0.55);
+                    backdrop-filter: blur(30px);
+                    ">
+                  <div class="card-body p-5 shadow-5 text-center">
+                    <h2 class="fw-bold mb-5">Login now</h2>
+                    <form>
+                      
+                  
+        
+                      <!-- Email input -->
+                      <div class="form-outline mb-4 text-lg-start">
+                          <label class="form-label text-start" for="form3Example3">Email address </label>
+                        <input type="email" id="form3Example3" class="form-control" name="email" [(ngModel)]="email" />
+                        
+                      </div>
+        
+                      <!-- Password input -->
+                      <div class="form-outline mb-4 text-lg-start ">
+                          <label class="form-label " for="form3Example4">Password </label>
+                        <input type="password" id="form3Example4" class="form-control" name="password" [(ngModel)]="password"/>
+                        
+                      </div>
+        
+                     
+                     
+        
+                      <!-- Submit button -->
+                      <button type="submit" class="btn btn-primary btn-block mb-2" (click) = "submitValue()">
+                        Login
+                      </button>
+                     
+                      <div class="text-center text-danger" *ngIf="flag">
+                          Invalid Email or Password
+                      </div>
+        
+                      
+        
+                        
+        
+        
+                      
+                    </form>
+                  </div>
+                </div>
+              </div>
+        
+              <div class="col-lg-6 mb-5 mb-lg-0 h-lg-80">
+                <img src="../../assets/login img.jpg" class="w-100  rounded-4 shadow-4"
+                  alt="" style="height: 70%;"/>
+              </div>
+            </div>
+          </div>
+    </div>
+    <!-- Jumbotron -->
+  </section>
+  <!-- Section: Design Block -->    

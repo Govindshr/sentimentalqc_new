@@ -1,0 +1,46 @@
+.toast-box{
+ 
+    border: 1px solid wheat;
+    display: bl;
+    display: inline-block;
+    margin: auto;
+    position: absolute;
+    top: 22px;
+    left: 40%;
+    
+    background-color: white;
+    z-index: 11;
+    color: green;
+   
+    padding: 23px;
+    font-size: 16px;
+    border-radius: 8px;
+}
+.btn:hover{
+    background-color: green;
+    border:1px solid green;
+}
+.highlighted {
+    background-color: rgb(186 248 196 / 54%);
+  }
+  .pagination {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .paginationbutton {
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .paginationbutton.active {
+    font-weight: bold;
+    background-color: #007bff;
+    color: white;
+  }
+  
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  
