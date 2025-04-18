@@ -18,7 +18,7 @@ constructor(private router:Router){
   }
 
   submitValue(){
-  if(this.email==="kajal@qdegrees.org" && this.password=="12345")
+  if(this.email==="atlas@qdegrees.org" && this.password=="Atlas@123")
   {
     this.router.navigate(["home"])
   }

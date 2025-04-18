@@ -71,10 +71,19 @@
                   </select>
                 </td>
                 <td [ngClass]="b.updated ? 'highlighted' : ''">
+                  <div class="d-flex gap-2">
                   <button *ngIf="activetab=='present'" type="button" class="btn btn-primary" id="liveToastBtn"
-                    (click)="doneResult(b)">{{b.updated ? 'Updated' : 'Done'}}</button>
+                    (click)="doneResult(b ,'done')">{{b.updated ? 'Updated' : 'Done'}}</button>
+                    <button *ngIf="activetab=='present'" type="button" class="btn btn-primary" id="liveToastBtn"
+                    (click)="doneResult(b,'cwt')">{{b.updated ? 'CWT Done' : 'CWT'}}</button>
+                  </div>
+                  <div class="d-flex gap-2">
                   <button *ngIf="activetab=='history'" type="button" class="btn btn-primary" id="liveToastBtn"
-                    (click)="doneResultForHistory(b)">{{b.updated ? 'Updated' : 'Done'}}</button>
+                    (click)="doneResultForHistory(b , 'done')">{{b.updated ? 'Updated' : 'Done'}}</button>
+                    <button *ngIf="activetab=='history'" type="button" class="btn btn-primary" id="liveToastBtn"
+                    (click)="doneResultForHistory(b , 'cwt')">{{b.updated ? 'CWT Done' : 'CWT'}}</button>
+
+                  </div>
                 </td>
               </tr>
             </tbody>

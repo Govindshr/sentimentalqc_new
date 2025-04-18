@@ -160,8 +160,14 @@ export class HomepageComponent implements OnInit {
     });
   }
  
-  doneResult(event: any) {
+  doneResult(event: any,cwt:any) {
   
+    if(cwt=='done'){
+      event.cwt = 'no'
+    }else if(cwt=='cwt'){
+      event.cwt = 'yes'
+    }
+
     event.is_checked = 1;
     if(event.conflict){
       let conflict = Number(event.conflict)
@@ -202,8 +208,12 @@ export class HomepageComponent implements OnInit {
     });
     this.clearModalFields()
   }
-  doneResultForHistory(event: any) {
-  
+  doneResultForHistory(event: any , cwt:any) {
+    if(cwt=='done'){
+      event.cwt = 'no'
+    }else if(cwt=='cwt'){
+      event.cwt = 'yes'
+    }
     event.is_checked = 1;
     if(event.conflict){
       let conflict = Number(event.conflict)
