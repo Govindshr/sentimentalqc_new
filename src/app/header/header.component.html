@@ -1,7 +1,15 @@
 <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
-    <div class="container-fluid ">
-      <a class="navbar-brand" href="#">Atlas Copco Sentiment Analysis</a>
-      
-      
-    </div>
-  </nav>
+  <div class="container-fluid d-flex justify-content-between align-items-center">
+    
+    <a class="navbar-brand text-white">Atlas Copco Sentiment Analysis</a>
+
+    <button
+      *ngIf="!isLoginPage()"
+      class="btn btn-outline-light btn-sm"
+      (click)="logout()"
+    >
+      Logout
+    </button>
+
+  </div>
+</nav>
