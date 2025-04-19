@@ -106,6 +106,16 @@ export class HomepageComponent implements OnInit {
     });
   }
  
+  toastMessage: string = '';
+
+showToastMessage(): void {
+  const toastEl = document.getElementById('errorToast');
+  if (toastEl) {
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+  }
+}
+
   allHistoricalData(type:any) {
     if (type=="main"){
       this.page.offset=1
@@ -160,100 +170,99 @@ export class HomepageComponent implements OnInit {
     });
   }
  
-  doneResult(event: any,cwt:any) {
+  doneResult(event: any, cwt: any) {
+    if (cwt === 'done') {
+      event.cwt = 'no';
+    } else if (cwt === 'cwt') {
+      event.cwt = 'yes';
+    }
   
-    if(cwt=='done'){
-      event.cwt = 'no'
-    }else if(cwt=='cwt'){
-      event.cwt = 'yes'
-    }
-
     event.is_checked = 1;
-    if(event.conflict){
-      let conflict = Number(event.conflict)
-      event.conflict = conflict
-    } 
-    if(event.category_qc && event.category_qc.length == 0) {
-      delete event.category_qc;
+  
+    if (event.conflict) {
+      event.conflict = Number(event.conflict);
     }
-    // console.log(!event.category_reason)
-    if (!event.category_reason){
-      event.category_reason=[]
-      
+  
+    if (!event.category_reason) {
+      event.category_reason = [];
     }
-    let categoriesArray = event.category_reason.map((obj: any) => obj.Category);
-
-    console.log(categoriesArray)
-    // console.log(categoriesString)
-    event.category_qc = categoriesArray ? categoriesArray:[]
-    // if (this.savedCategories) 
-    //   console.log("daata",this.categoryarray)
-    //   event.category_reason = this.savedCategories
-     
-    //    delete event.categoryArray
-    // }
-    console.log(event,"res")
-
-    this.apiService.updateData(event).subscribe(data => {
-      this.check = data;
-      if(this.check.status_code==200)
-        {
-         
+  
+    const categoriesArray = event.category_reason.map((obj: any) => obj.Category);
+    event.category_qc = categoriesArray ? categoriesArray : [];
+  
+    this.apiService.updateData(event).subscribe({
+      next: (data: any) => {
+        this.check = data;
+  
+        if (this.check.status_code === 200) {
           event.updated = true;
+          event.showCWT = false;
+        } else if (this.check.status_code === 500) {
+          event.showCWT = true;
+          this.toastMessage = this.check.message || 'Internal Server Error';
+          this.showToastMessage();
         }
-      event.updated = true;
-      this.showToast = true;
-      // this.savedCategories=[]
-      setTimeout(() => { this.showToast = false; }, 2000);
-    });
-    this.clearModalFields()
-  }
-  doneResultForHistory(event: any , cwt:any) {
-    if(cwt=='done'){
-      event.cwt = 'no'
-    }else if(cwt=='cwt'){
-      event.cwt = 'yes'
-    }
-    event.is_checked = 1;
-    if(event.conflict){
-      let conflict = Number(event.conflict)
-      event.conflict = conflict
-    } 
-    if(event.category_qc && event.category_qc.length == 0) {
-      delete event.category_qc;
-    }
-    // console.log(!event.category_reason)
-    if (!event.category_reason){
-      event.category_reason=[]
-      
-    }
-    let categoriesArray = event.category_reason.map((obj: any) => obj.Category);
-
-    console.log(categoriesArray)
-    // console.log(categoriesString)
-    event.category_qc = categoriesArray ? categoriesArray:[]
-    // if (this.savedCategories) 
-    //   console.log("daata",this.categoryarray)
-    //   event.category_reason = this.savedCategories
-     
-    //    delete event.categoryArray
-    // }
-    console.log(event,"res")
-
-    this.apiService.updateHistoricalData(event).subscribe(data => {
-      this.check = data;
-      console.log("data for ischeck",this.check)
-      if(this.check.status_code==200)
-      {
-       
-        event.updated = true;
+  
+        this.showToast = true;
+        setTimeout(() => { this.showToast = false; }, 2000);
+      },
+      error: (err) => {
+        event.showCWT = true;
+        this.toastMessage = err.error?.message || 'Internal Server Error';
+        this.showToastMessage();
       }
-      this.showToast = true;
-      // this.savedCategories=[]
-      setTimeout(() => { this.showToast = false; }, 2000);
     });
-    this.clearModalFields()
+  
+    this.clearModalFields();
   }
+  
+  doneResultForHistory(event: any, cwt: any) {
+    if (cwt === 'done') {
+      event.cwt = 'no';
+    } else if (cwt === 'cwt') {
+      event.cwt = 'yes';
+    }
+  
+    event.is_checked = 1;
+  
+    if (event.conflict) {
+      event.conflict = Number(event.conflict);
+    }
+  
+    if (!event.category_reason) {
+      event.category_reason = [];
+    }
+  
+    const categoriesArray = event.category_reason.map((obj: any) => obj.Category);
+    event.category_qc = categoriesArray ? categoriesArray : [];
+  
+    this.apiService.updateHistoricalData(event).subscribe({
+      next: (data: any) => {
+        this.check = data;
+  
+        if (this.check.status_code === 200) {
+          event.updated = true;
+          event.showCWT = false;
+        } else if (this.check.status_code === 500) {
+          event.showCWT = true;
+          this.toastMessage = this.check.message || 'Internal Server Error';
+          this.showToastMessage();
+        }
+  
+        this.showToast = true;
+        setTimeout(() => { this.showToast = false; }, 2000);
+      },
+      error: (err) => {
+        event.showCWT = true;
+        this.toastMessage = err.error?.message || 'Internal Server Error';
+        this.showToastMessage();
+      }
+    });
+  
+    this.clearModalFields();
+  }
+  
+  
 
   reload() {
     window.location.reload();
